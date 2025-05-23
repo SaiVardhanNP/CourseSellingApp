@@ -9,7 +9,7 @@ function userAuth(req,res,next){
         const decoded=jwt.verify(token,JWT_USER_PASSWORD);
 
     if(decoded){
-        req.userId=decoded.id;
+        req.userid=decoded.id;
         next();
     }
     }

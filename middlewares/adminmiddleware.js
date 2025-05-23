@@ -8,7 +8,7 @@ function adminAuth(req,res,next){
         const decoded=jwt.verify(token,JWT_ADMIN_PASSWORD);
 
     if(decoded){
-        req.adminId=decoded.id;
+        req.adminid=decoded.id;
         next();
     }
     }

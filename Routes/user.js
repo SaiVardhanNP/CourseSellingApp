@@ -1,7 +1,7 @@
 const {Router}=require("express");
 const bcrypt=require("bcrypt");
 const {z}=require("zod");
-const {UserModel}=require("../db");
+const {UserModel,CourseModel, PurchaseModel}=require("../db");
 const {userAuth}=require("../middlewares/usermiddleware")
 const jwt= require("jsonwebtoken");
 const userRouter=Router();
@@ -59,8 +59,9 @@ userRouter.post("/signin",async(req,res)=>{
     const response=await UserModel.findOne({
         email:email
     })
+    console.log(response)
     if(response){
-        const comparePassword=bcrypt.compare(password,response.password);
+        const comparePassword=await bcrypt.compare(password,response.password);
         if(!comparePassword){
             res.json({
                 msg:"Invalid password!"
@@ -83,9 +84,25 @@ userRouter.post("/signin",async(req,res)=>{
 })
 
 
-userRouter.get("/purchases",userAuth,(req,res)=>{
+userRouter.get("/purchases",userAuth,async(req,res)=>{
+    const userid=req.userid;
+
+    const courses= await PurchaseModel.find({
+        userid
+    })
+
+    let purchases=[];
+    for(i=0;i<courses.length;i++){
+        purchases.push(courses[i].courseid)
+    }
+
+    let purchasedcourses=await CourseModel.find({
+        _id:{$in:purchases}
+    })
+
     res.json({
-        msg:"user purchase end point!"
+        courses,
+        purchasedcourses
     })
 })
 
